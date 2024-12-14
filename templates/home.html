@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health & Fitness Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            width: 50%;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            border-radius: 8px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .user {
+            text-align: right;
+        }
+        .chatbot {
+            text-align: left;
+            color: #555;
+        }
+        textarea {
+            width: calc(100% - 40px);
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        
+        /* Logout button styling */
+        .logout-btn {
+            position: fixed; /* Positioning at top-right corner */
+            top: 20px;
+            right: 20px;
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .logout-btn:hover {
+            background-color: red; /* Hover color */
+        }
+    </style>
+</head>
+<body>
+    <!-- Logout Button (wrapped in a form to send a POST request) -->
+    <form action="/logout" method="POST">
+        <button class="logout-btn" type="submit">Logout</button>
+    </form>
+
+    <div class="chat-container">
+        <h2>Health & Fitness Chatbot</h2>
+        <div id="chatbox"></div>
+        <textarea id="message" placeholder="Type your message here..."></textarea>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userMessage = document.getElementById('message').value;
+            const chatbox = document.getElementById('chatbox');
+            const sendButton = document.querySelector('button');
+
+            // Disable the send button to avoid multiple submissions
+            sendButton.disabled = true;
+
+            // Display user message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user';
+            userDiv.textContent = `You: ${userMessage}`;
+            chatbox.appendChild(userDiv);
+
+            // Send message to server
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${encodeURIComponent(userMessage)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display chatbot response
+                const botDiv = document.createElement('div');
+                botDiv.className = 'message chatbot';
+                botDiv.textContent = `Chatbot: ${data.response}`;
+                chatbox.appendChild(botDiv);
+
+                // Scroll to the bottom
+                chatbox.scrollTop = chatbox.scrollHeight;
+
+                // Re-enable the send button
+                sendButton.disabled = false;
+            });
+
+            // Clear the input field
+            document.getElementById('message').value = '';
+        }
+    </script>
+</body>
+</html>

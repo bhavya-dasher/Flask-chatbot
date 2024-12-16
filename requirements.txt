@@ -1,6 +1,6 @@
 ﻿pandas
 transformers
 flask
-tf-keras
+torch
 gunicorn
 tensorflow
